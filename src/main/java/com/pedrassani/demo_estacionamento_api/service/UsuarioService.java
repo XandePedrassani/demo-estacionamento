@@ -1,14 +1,14 @@
 package com.pedrassani.demo_estacionamento_api.service;
 
 import com.pedrassani.demo_estacionamento_api.entity.Usuario;
+import com.pedrassani.demo_estacionamento_api.exception.EntityNotFoundException;
+import com.pedrassani.demo_estacionamento_api.exception.PasswordInvalidException;
 import com.pedrassani.demo_estacionamento_api.exception.UsernameUniqueViolationException;
 import com.pedrassani.demo_estacionamento_api.repository.UsuarioRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.hibernate.exception.ConstraintViolationException;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -37,7 +37,7 @@ public class UsuarioService {
     @Transactional
     public Usuario buscarPorId(Long idUser){
         return usuarioRepository.findById(idUser).orElseThrow(
-                () -> new RuntimeException("Usuario não encontrado.")
+                () -> new EntityNotFoundException(String.format("Usuario id='%s' nao encontrado.", idUser))
         );
     }
     @Transactional
@@ -48,10 +48,10 @@ public class UsuarioService {
             if(novaSenha.equals(confirmaSenha)){
                 user.setPassword(novaSenha);
             }else{
-                throw new RuntimeException("Nova senha não confere com a confirmação senha");
+                throw new PasswordInvalidException("Nova senha não confere com a confirmação senha");
             }
         }else{
-            throw new RuntimeException("Senha atual incorreta");
+            throw new PasswordInvalidException("Senha atual incorreta");
         }
 
         return user;
