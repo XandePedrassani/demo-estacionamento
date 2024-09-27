@@ -1,6 +1,5 @@
 package com.pedrassani.demo_estacionamento_api.web.dto;
 
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -12,12 +11,14 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UsuarioCreateDto {
-    @NotBlank
-    @Email(message = "Formato de e-mail está invalido")
-    private String username;
+public class UsuarioSenhaDto {
     @NotBlank
     @Size(min = 6, max = 12)
-    private String password;
-
+    private String senhaAtual;
+    @NotBlank
+    @Size(min = 6, max = 12)
+    private String novaSenha;
+    @NotBlank
+    @Size(min = 6, max = 12)
+    private String confirmaSenha;
 }

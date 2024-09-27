@@ -4,7 +4,9 @@ import com.pedrassani.demo_estacionamento_api.entity.Usuario;
 import com.pedrassani.demo_estacionamento_api.service.UsuarioService;
 import com.pedrassani.demo_estacionamento_api.web.dto.UsuarioCreateDto;
 import com.pedrassani.demo_estacionamento_api.web.dto.UsuarioResponseDto;
+import com.pedrassani.demo_estacionamento_api.web.dto.UsuarioSenhaDto;
 import com.pedrassani.demo_estacionamento_api.web.dto.mapper.UsuarioMapper;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +21,7 @@ public class UsuarioController {
     private final UsuarioService usuarioService;
 
     @PostMapping
-    public ResponseEntity<UsuarioResponseDto> create(@RequestBody UsuarioCreateDto usuarioCreateDto){
+    public ResponseEntity<UsuarioResponseDto> create(@Valid @RequestBody UsuarioCreateDto usuarioCreateDto){//@Valid faz o jakarta fazer as validações criadas no DTO
 
         Usuario user = usuarioService.salvar(UsuarioMapper.toUsuario(usuarioCreateDto));
         return ResponseEntity.status(HttpStatus.CREATED).body(UsuarioMapper.toDto(user));
@@ -32,14 +34,14 @@ public class UsuarioController {
     }
 
     @PatchMapping("/{id}")//PatchMapping é para alterar parciamente objeto(boa pratica)
-    public ResponseEntity<Usuario> updatePassword(@PathVariable Long id, @RequestBody Usuario usuario){
-        Usuario user = usuarioService.editarSenha(id, usuario.getPassword());
-        return  ResponseEntity.ok(user);
+    public ResponseEntity<Void> updatePassword(@PathVariable Long id, @Valid @RequestBody UsuarioSenhaDto usuarioSenhaDto){
+        Usuario user = usuarioService.editarSenha(id, usuarioSenhaDto.getSenhaAtual(), usuarioSenhaDto.getNovaSenha(), usuarioSenhaDto.getConfirmaSenha());
+        return  ResponseEntity.noContent().build();//Não retorna nada, porem com o status 204 de sucesso
     }
 
     @GetMapping
-    public ResponseEntity<List<Usuario>> getAll(){
+    public ResponseEntity<List<UsuarioResponseDto>> getAll(){
         List<Usuario> users = usuarioService.buscarTodos();
-        return  ResponseEntity.ok(users);
+        return  ResponseEntity.ok(UsuarioMapper.toDto(users));
     }
 }
