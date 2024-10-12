@@ -75,7 +75,7 @@ public class UsuarioController {
                     @ApiResponse(responseCode = "404", description = "Usuario não encontrado",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))
                     ),
-                    @ApiResponse(responseCode = "400", description = "Senha invalida",
+                    @ApiResponse(responseCode = "422", description = "Senha invalida",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))
                     )
             }
