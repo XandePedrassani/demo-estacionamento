@@ -9,6 +9,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,10 +19,11 @@ import java.util.List;
 @Slf4j
 public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
-
+    private final PasswordEncoder passwordEncoder;
     @Transactional
     public Usuario salvar(Usuario usuario){
         try {
+            usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
             Usuario savedUsuario = usuarioRepository.save(usuario);
             usuarioRepository.flush();  // Sem isso ele nunca caia no meu catch
             return savedUsuario;
@@ -44,9 +46,9 @@ public class UsuarioService {
     public Usuario editarSenha(Long idUser, String senhaAtual, String novaSenha, String confirmaSenha){
         //Não precisa do update pois o hibernate está controlando
         Usuario user = buscarPorId(idUser);
-        if(user.getPassword().equals(senhaAtual)){
+        if(passwordEncoder.matches(novaSenha, user.getPassword())){
             if(novaSenha.equals(confirmaSenha)){
-                user.setPassword(novaSenha);
+                user.setPassword(passwordEncoder.encode(novaSenha));
             }else{
                 throw new PasswordInvalidException("Nova senha não confere com a confirmação senha");
             }
@@ -64,12 +66,12 @@ public class UsuarioService {
 
     @Transactional
     public Usuario buscarPorUsername(String username) {
-        return usuarioRepository.findByUsername(username).orElseThrow(
+        return usuarioRepository.findByUserName(username).orElseThrow(
                 () -> new EntityNotFoundException(String.format("Usuario ='%s' nao encontrado.", username))
         );
     }
 
     public Usuario.Role buscarRolePorUsername(String userName) {
-        return usuarioRepository.findRoleByUsername(userName);
+        return usuarioRepository.findRoleByUserName(userName);
     }
 }
