@@ -46,7 +46,7 @@ public class UsuarioService {
     public Usuario editarSenha(Long idUser, String senhaAtual, String novaSenha, String confirmaSenha){
         //Não precisa do update pois o hibernate está controlando
         Usuario user = buscarPorId(idUser);
-        if(passwordEncoder.matches(novaSenha, user.getPassword())){
+        if(passwordEncoder.matches(senhaAtual, user.getPassword())){
             if(novaSenha.equals(confirmaSenha)){
                 user.setPassword(passwordEncoder.encode(novaSenha));
             }else{

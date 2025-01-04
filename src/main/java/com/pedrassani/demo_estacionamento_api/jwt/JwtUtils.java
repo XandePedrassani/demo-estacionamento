@@ -19,7 +19,7 @@ public class JwtUtils {
     public static final String JWT_AUTHORIZATION = "Authorization";
     public static final String SECRET_KEY = "654321-321654-321654-321654-321654";
     public static final long EXPIRE_DAYS = 0;
-    public static final long EXPIRE_HOURS = 0;
+    public static final long EXPIRE_HOURS = 1;
     public static final long EXPIRE_MINUTES = 2;
 
     private JwtUtils(){
