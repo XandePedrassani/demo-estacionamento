@@ -12,11 +12,13 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,6 +32,7 @@ public class UsuarioController {
 
     @Operation(
             summary = "Criar um novo usuario", description = "Recurso para criar um novo usuario",
+            security = @SecurityRequirement(name = "security"),
             responses = {
                     @ApiResponse(responseCode = "201", description = "Usuario criado com sucesso",
                                  content = @Content(mediaType = "application/json", schema = @Schema(implementation = UsuarioResponseDto.class))
@@ -51,16 +54,21 @@ public class UsuarioController {
 
     @Operation(
             summary = "Recuperar um usuario pelo id", description = "Recuperar um usuario pelo id",
+            security = @SecurityRequirement(name = "security"),
             responses = {
                     @ApiResponse(responseCode = "200", description = "Usuario recuperado com sucesso",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = UsuarioResponseDto.class))
                     ),
                     @ApiResponse(responseCode = "404", description = "Usuario não encontrado",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))
+                    ),
+                    @ApiResponse(responseCode = "403", description = "Usuario sem moral",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))
                     )
             }
     )
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') OR (hasRole('CLIENTE') AND #id == authentication.principal.id)")
     public ResponseEntity<UsuarioResponseDto> getUser(@PathVariable Long id){
         Usuario user = usuarioService.buscarPorId(id);
         return  ResponseEntity.ok(UsuarioMapper.toDto(user));
@@ -68,6 +76,7 @@ public class UsuarioController {
 
     @Operation(
             summary = "Alterar senha", description = "Recurso para alterar senha",
+            security = @SecurityRequirement(name = "security"),
             responses = {
                     @ApiResponse(responseCode = "204", description = "Senha atualizada com sucesso",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = Void.class))
@@ -77,10 +86,14 @@ public class UsuarioController {
                     ),
                     @ApiResponse(responseCode = "422", description = "Senha invalida",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))
+                    ),
+                    @ApiResponse(responseCode = "403", description = "Usuario sem moral",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))
                     )
             }
     )
     @PatchMapping("/{id}")//PatchMapping é para alterar parciamente objeto(boa pratica)
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLIENTE') AND (#id == authentication.principal.id)")
     public ResponseEntity<Void> updatePassword(@PathVariable Long id, @Valid @RequestBody UsuarioSenhaDto usuarioSenhaDto){
         Usuario user = usuarioService.editarSenha(id, usuarioSenhaDto.getSenhaAtual(), usuarioSenhaDto.getNovaSenha(), usuarioSenhaDto.getConfirmaSenha());
         return  ResponseEntity.noContent().build();//Não retorna nada, porem com o status 204 de sucesso
@@ -89,13 +102,18 @@ public class UsuarioController {
 
     @Operation(
             summary = "Recuperar todos os usuarios", description = "Recuperar todos os usuarios",
+            security = @SecurityRequirement(name = "security"),
             responses = {
                     @ApiResponse(responseCode = "200", description = "Usuario recuperado com sucesso",
                             content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = UsuarioResponseDto.class)))
+                    ),
+                    @ApiResponse(responseCode = "403", description = "Usuario sem moral",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))
                     )
             }
     )
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<UsuarioResponseDto>> getAll(){
         List<Usuario> users = usuarioService.buscarTodos();
         return  ResponseEntity.ok(UsuarioMapper.toDto(users));
