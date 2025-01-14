@@ -115,6 +115,7 @@ public class UsuarioIT {
     public void buscarUsuario_comIdExistente_RetornoUsuario200(){
         UsuarioResponseDto usuarioResponseDto = testClient.get()
                 .uri("/api/v1/usuarios/100")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "alexandre@teste.com", "1234567"))
                 .exchange()//resposta
                 .expectStatus().isOk()
                 .expectBody(UsuarioResponseDto.class)
@@ -122,12 +123,35 @@ public class UsuarioIT {
 
         org.assertj.core.api.Assertions.assertThat(usuarioResponseDto.getUserName()).isEqualTo("alexandre@teste.com");
         org.assertj.core.api.Assertions.assertThat(usuarioResponseDto.getIdUsuario()).isEqualTo(100L);
+
+        usuarioResponseDto = testClient.get()
+                .uri("/api/v1/usuarios/101")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "alexandre@teste.com", "1234567"))
+                .exchange()//resposta
+                .expectStatus().isOk()
+                .expectBody(UsuarioResponseDto.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(usuarioResponseDto.getUserName()).isEqualTo("teste2@teste.com");
+        org.assertj.core.api.Assertions.assertThat(usuarioResponseDto.getIdUsuario()).isEqualTo(101L);
+
+        usuarioResponseDto = testClient.get()
+                .uri("/api/v1/usuarios/101")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "teste2@teste.com", "1234567"))
+                .exchange()//resposta
+                .expectStatus().isOk()
+                .expectBody(UsuarioResponseDto.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(usuarioResponseDto.getUserName()).isEqualTo("teste2@teste.com");
+        org.assertj.core.api.Assertions.assertThat(usuarioResponseDto.getIdUsuario()).isEqualTo(101L);
     }
 
     @Test
     public void buscarUsuario_comIdInexistenteExistente_RetornoUsuario404(){
         ErrorMessage errorMessage  = testClient.get()
                 .uri("/api/v1/usuarios/0")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "alexandre@teste.com", "1234567"))
                 .exchange()//resposta
                 .expectStatus().isNotFound()
                 .expectBody(ErrorMessage.class)
@@ -136,6 +160,19 @@ public class UsuarioIT {
         org.assertj.core.api.Assertions.assertThat(errorMessage.getStatus()).isNotNull();
     }
 
+    @Test
+    public void buscarUsuario_comIdOutroUsario_RetornoUsuario403(){
+        ErrorMessage responseBody  = testClient.get()
+                .uri("/api/v1/usuarios/100")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "teste2@teste.com", "1234567"))
+                .exchange()//resposta
+                .expectStatus().isForbidden()
+                .expectBody(ErrorMessage.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(403);
+    }
     @Test
     public void updatePassword_ComSenhasInvalidas_RetornarStatus400() {
         // Testando senhas inválidas (senha atual vazia)

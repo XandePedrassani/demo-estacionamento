@@ -4,6 +4,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 
@@ -17,5 +18,13 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint
         log.info("Http status 401 {}", authException.getMessage());
         response.setHeader("www-authenticate", "Bearer realm= '/api/v1/auth'");
         response.sendError(401);
+        if (authException instanceof InsufficientAuthenticationException) {
+            // Acesso negado (403)
+            response.setHeader("www-authenticate", "Acess negado");
+            response.sendError(403);
+        } else {
+            response.setHeader("www-authenticate", "Bearer realm= '/api/v1/auth'");
+            response.sendError(401);
+        }
     }
 }

@@ -2,6 +2,7 @@ package com.pedrassani.demo_estacionamento_api.config;
 
 import com.pedrassani.demo_estacionamento_api.jwt.JwtAuthenticationEntryPoint;
 import com.pedrassani.demo_estacionamento_api.jwt.JwtAuthorizationFilter;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -45,7 +46,8 @@ public class SpringSecurityConfig {
                 ).addFilterBefore(
                         jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class
                 ).exceptionHandling(ex -> ex
-                        .authenticationEntryPoint(new JwtAuthenticationEntryPoint())) //Quando ouver uma exeção spring cria essa classe para retornar o 401
+                        .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
+                ) //Quando ouver uma exeção spring cria essa classe para retornar o 401
                 .build();
     }
 
