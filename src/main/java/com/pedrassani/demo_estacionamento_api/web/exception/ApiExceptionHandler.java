@@ -1,5 +1,6 @@
 package com.pedrassani.demo_estacionamento_api.web.exception;
 
+import com.pedrassani.demo_estacionamento_api.exception.CpfUniqueViolationException;
 import com.pedrassani.demo_estacionamento_api.exception.EntityNotFoundException;
 import com.pedrassani.demo_estacionamento_api.exception.PasswordInvalidException;
 import com.pedrassani.demo_estacionamento_api.exception.UsernameUniqueViolationException;
@@ -45,7 +46,7 @@ public class ApiExceptionHandler {
                 .body(new ErrorMessage(request, HttpStatus.UNPROCESSABLE_ENTITY, "Campo(s) invalido(s)", result));
 
     }
-    @ExceptionHandler(UsernameUniqueViolationException.class)
+    @ExceptionHandler({UsernameUniqueViolationException.class, CpfUniqueViolationException.class})
     public ResponseEntity<ErrorMessage> methodUsernameUniqueViolationException(RuntimeException ex,
                                                                         HttpServletRequest request){
         log.error("Api Error", ex);
