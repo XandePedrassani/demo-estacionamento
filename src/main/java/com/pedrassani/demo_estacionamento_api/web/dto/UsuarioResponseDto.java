@@ -1,16 +1,14 @@
 package com.pedrassani.demo_estacionamento_api.web.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
+import lombok.*;
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class UsuarioResponseDto {
-    private long idUsuario;
-    private String userName;
+
+    private Long id;
+    private String username;
     private String role;
 }

@@ -5,10 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
-public class ClienteResponseDto {
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor
+public class VagaResponseDto {
     private Long id;
-    private String nome;
-    private String cpf;
+    private String codigo;
+    private String status;
 }

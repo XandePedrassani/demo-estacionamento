@@ -10,12 +10,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class UsuarioMapper {
-    public static Usuario toUsuario(UsuarioCreateDto usuarioCreateDto){
-        return new ModelMapper().map(usuarioCreateDto, Usuario.class);//Converte o usuarioDto para usuario
 
+    public static Usuario toUsuario(UsuarioCreateDto createDto) {
+        return new ModelMapper().map(createDto, Usuario.class);
     }
 
-    public static UsuarioResponseDto toDto(Usuario usuario){
+    public static UsuarioResponseDto toDto(Usuario usuario) {
         String role = usuario.getRole().name().substring("ROLE_".length());
         PropertyMap<Usuario, UsuarioResponseDto> props = new PropertyMap<Usuario, UsuarioResponseDto>() {
             @Override
@@ -24,19 +24,11 @@ public class UsuarioMapper {
             }
         };
         ModelMapper mapper = new ModelMapper();
-        mapper.addMappings(props);//Seto o role que eu criei acima, dessa forma o mapper não trocara o valor
+        mapper.addMappings(props);
         return mapper.map(usuario, UsuarioResponseDto.class);
     }
-    public static List<UsuarioResponseDto> toDto(List<Usuario> usuarios){
-        return usuarios.stream().map(UsuarioMapper::toDto).collect(Collectors.toList());
-        /*
-            usuarios.stream():
-                Converte a lista usuarios em um fluxo (stream).
-                Um stream é uma sequência de elementos que suporta operações agregadas sequenciais e paralelas.
-            map(UsuarioMapper::toDto):
-                Aplica a função toDto da classe UsuarioMapper a cada elemento do stream.
-            collect(Collectors.toList()):
-                Coleta os elementos do stream em uma lista. O resultado é uma lista de objetos UsuarioDto.
-        * */
+
+    public static List<UsuarioResponseDto> toListDto(List<Usuario> usuarios) {
+        return usuarios.stream().map(user -> toDto(user)).collect(Collectors.toList());
     }
 }

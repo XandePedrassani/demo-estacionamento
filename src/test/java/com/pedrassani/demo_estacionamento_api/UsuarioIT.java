@@ -31,8 +31,8 @@ public class UsuarioIT {
                 .returnResult().getResponseBody();
 
         org.assertj.core.api.Assertions.assertThat(usuarioCreateDto).isNotNull();
-        org.assertj.core.api.Assertions.assertThat(usuarioCreateDto.getIdUsuario()).isNotNull();
-        org.assertj.core.api.Assertions.assertThat(usuarioCreateDto.getUserName()).isEqualTo("");
+        org.assertj.core.api.Assertions.assertThat(usuarioCreateDto.getUsername()).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(usuarioCreateDto.getUsername()).isEqualTo("");
         org.assertj.core.api.Assertions.assertThat(usuarioCreateDto.getRole()).isEqualTo("CLIENTE");
     }
 
@@ -121,8 +121,8 @@ public class UsuarioIT {
                 .expectBody(UsuarioResponseDto.class)
                 .returnResult().getResponseBody();
 
-        org.assertj.core.api.Assertions.assertThat(usuarioResponseDto.getUserName()).isEqualTo("alexandre@teste.com");
-        org.assertj.core.api.Assertions.assertThat(usuarioResponseDto.getIdUsuario()).isEqualTo(100L);
+        org.assertj.core.api.Assertions.assertThat(usuarioResponseDto.getUsername()).isEqualTo("alexandre@teste.com");
+        org.assertj.core.api.Assertions.assertThat(usuarioResponseDto.getId()).isEqualTo(100L);
 
         usuarioResponseDto = testClient.get()
                 .uri("/api/v1/usuarios/101")
@@ -132,8 +132,8 @@ public class UsuarioIT {
                 .expectBody(UsuarioResponseDto.class)
                 .returnResult().getResponseBody();
 
-        org.assertj.core.api.Assertions.assertThat(usuarioResponseDto.getUserName()).isEqualTo("teste2@teste.com");
-        org.assertj.core.api.Assertions.assertThat(usuarioResponseDto.getIdUsuario()).isEqualTo(101L);
+        org.assertj.core.api.Assertions.assertThat(usuarioResponseDto.getUsername()).isEqualTo("teste2@teste.com");
+        org.assertj.core.api.Assertions.assertThat(usuarioResponseDto.getId()).isEqualTo(101L);
 
         usuarioResponseDto = testClient.get()
                 .uri("/api/v1/usuarios/101")
@@ -143,8 +143,8 @@ public class UsuarioIT {
                 .expectBody(UsuarioResponseDto.class)
                 .returnResult().getResponseBody();
 
-        org.assertj.core.api.Assertions.assertThat(usuarioResponseDto.getUserName()).isEqualTo("teste2@teste.com");
-        org.assertj.core.api.Assertions.assertThat(usuarioResponseDto.getIdUsuario()).isEqualTo(101L);
+        org.assertj.core.api.Assertions.assertThat(usuarioResponseDto.getUsername()).isEqualTo("teste2@teste.com");
+        org.assertj.core.api.Assertions.assertThat(usuarioResponseDto.getId()).isEqualTo(101L);
     }
 
     @Test

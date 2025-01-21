@@ -13,20 +13,19 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
-
+@NoArgsConstructor
 @Entity
 @Table(name = "usuarios")
 @Getter
 @Setter
-@NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public class Usuario implements Serializable {
     @Id
-    @GeneratedValue
-    @Column(name = "id_Usuario")
-    private Long idUsuario;
-    @Column(name = "user_name", nullable = false, unique = true, length = 100)
-    private String userName;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
+    @Column(name = "username", nullable = false, unique = true, length = 100)
+    private String username;
     @Column(name = "password", nullable = false, length = 200)
     private String password;
     @Enumerated(EnumType.STRING)
@@ -46,7 +45,8 @@ public class Usuario implements Serializable {
     @Column(name = "modificado_por")
     private String modificadoPor;
 
-    public enum Role{
+
+    public enum Role {
         ROLE_ADMIN, ROLE_CLIENTE
     }
 
@@ -55,18 +55,18 @@ public class Usuario implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Usuario usuario = (Usuario) o;
-        return Objects.equals(idUsuario, usuario.idUsuario);
+        return Objects.equals(id, usuario.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(idUsuario);
+        return Objects.hash(id);
     }
 
     @Override
     public String toString() {
         return "Usuario{" +
-                "idUsuario=" + idUsuario +
+                "id=" + id +
                 '}';
     }
 }
