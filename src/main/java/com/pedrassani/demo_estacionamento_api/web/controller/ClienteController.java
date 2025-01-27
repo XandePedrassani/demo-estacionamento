@@ -4,6 +4,7 @@ import com.pedrassani.demo_estacionamento_api.entity.Cliente;
 import com.pedrassani.demo_estacionamento_api.jwt.JwtUserDetails;
 import com.pedrassani.demo_estacionamento_api.repository.projection.ClienteProjection;
 import com.pedrassani.demo_estacionamento_api.service.ClienteService;
+import com.pedrassani.demo_estacionamento_api.service.JasperService;
 import com.pedrassani.demo_estacionamento_api.service.UsuarioService;
 import com.pedrassani.demo_estacionamento_api.web.dto.ClienteCreateDto;
 import com.pedrassani.demo_estacionamento_api.web.dto.ClienteResponseDto;
@@ -19,15 +20,20 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 import static io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY;
 
@@ -39,6 +45,7 @@ public class ClienteController {
 
     private final ClienteService clienteService;
     private final UsuarioService usuarioService;
+    private final JasperService jasperService;
 
     @Operation(summary = "Criar um novo cliente",
             description = "Recurso para criar um novo cliente vinculado a um usuário cadastrado. " +
@@ -134,5 +141,15 @@ public class ClienteController {
     public ResponseEntity<ClienteResponseDto> getDetalhes(@AuthenticationPrincipal JwtUserDetails userDetails) {
         Cliente cliente = clienteService.buscarPorUsuarioId(userDetails.getId());
         return ResponseEntity.ok(ClienteMapper.toDto(cliente));
+    }
+    //@PreAuthorize()
+    @GetMapping("/relatorio")
+    public ResponseEntity<PageableDto> getRelatorio(HttpServletResponse response) throws IOException {
+        byte[] bytes = jasperService.gerarPdf();
+        response.setContentType(MediaType.APPLICATION_PDF_VALUE);
+        response.setHeader("Content-disposition", "inline; filename = Teste.pdf");
+        response.getOutputStream().write(bytes);
+
+        return ResponseEntity.ok().build();
     }
 }
